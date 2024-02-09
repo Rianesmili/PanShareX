@@ -23,7 +23,7 @@ import fr.mastersime.pansharex.data.PhotoData
 import fr.mastersime.pansharex.feature.home.HomeViewModel
 
 @Composable
-fun SummaryView(photoData: PhotoData?) {
+fun SummaryView(className: String? = "Unknown") {
 
     val homeviewModel: HomeViewModel = hiltViewModel()
 
@@ -68,23 +68,11 @@ fun SummaryView(photoData: PhotoData?) {
         )
         Spacer(modifier = Modifier.padding(10.dp))
         Text(
-            text = photoData?.type ?: "Unknown",
+            text = className ?: "Unretrived",
             style = MaterialTheme.typography.bodyMedium,
             fontSize = 20.sp,
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SummaryViewPreview() {
-    SummaryView(
-        PhotoData(
-            image = null,
-            location = null,
-            type = "Unknown"
-        )
-    )
 }
 
 

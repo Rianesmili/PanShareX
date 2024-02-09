@@ -129,7 +129,7 @@ fun CameraView(navController: NavController, homeViewModel: HomeViewModel) {
                             //navController.navigate("$SUMMURY_VIEW_ROUTE/$className")
                             // Switch to the main thread before navigating
                             withContext(Dispatchers.Main) {
-                                navController.navigate(SUMMURY_VIEW_ROUTE)
+                                navController.navigate(SUMMURY_VIEW_ROUTE.replace("{className}", className))
                             }
                         }
 

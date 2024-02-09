@@ -1,6 +1,7 @@
 package fr.mastersime.pansharex.setup
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,10 +25,13 @@ fun SetupNavGraph(
             HomeView(navController = navController)
         }
         composable(
-            route = Screen.SUMMURY_VIEW_ROUTE,
+            route = Screen.SUMMURY_VIEW_ROUTE
         ) {
-            val mockLocation = Location(longitude = 0.0, latitude = 0.0)
-            SummaryView(PhotoData(image = null, location = mockLocation, type = "Unknown"))
+            backStackEntry: NavBackStackEntry ->
+            val className: String? = backStackEntry.arguments?.getString("className")
+            SummaryView(
+                className = className,
+            )
         }
     }
 }
