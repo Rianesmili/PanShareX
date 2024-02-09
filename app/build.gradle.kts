@@ -54,6 +54,7 @@ android {
 
 dependencies {
 
+    implementation("com.google.android.gms:play-services-location:21.1.0")
     //Define hilt_version
     val hilt_verssion = "2.48.1"
 
@@ -101,5 +102,8 @@ dependencies {
     //// ACCOMPANIST Permission ////
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
 
+
+    // AWAIT Google play services
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.5.2")
 
 }

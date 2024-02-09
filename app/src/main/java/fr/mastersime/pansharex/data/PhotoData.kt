@@ -7,8 +7,3 @@ data class PhotoData(
     val location: Location? = null,
     var type: String? = "Unknown"
 )
-
-data class Location(
-    val longitude: Double? = null,
-    val latitude: Double? = null
-)

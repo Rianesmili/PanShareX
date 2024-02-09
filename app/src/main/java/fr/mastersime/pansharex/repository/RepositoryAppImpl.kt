@@ -32,14 +32,13 @@ class RepositoryAppImpl @Inject constructor() : RepositoryApp {
 
         imageCapture?.let {
             CoroutineScope(Dispatchers.IO).launch {
-                it.takePicture(
-                    outputOptions,
-                    ContextCompat.getMainExecutor(context),
+
+                it.takePicture(outputOptions, ContextCompat.getMainExecutor(context),
                     object : ImageCapture.OnImageSavedCallback {
                         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                             val savedUri = Uri.fromFile(photoFile)
-                            val bitmap =
-                                MediaStore.Images.Media.getBitmap(context.contentResolver, savedUri)
+
+                            val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, savedUri)
 
                             val rotatedBitmap = correctBitmapOrientation(photoFile, bitmap)
 
