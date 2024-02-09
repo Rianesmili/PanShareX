@@ -1,4 +1,4 @@
-package fr.mastersime.repository
+package fr.mastersime.pansharex.repository
 
 import android.content.Context
 import androidx.camera.core.ImageCapture

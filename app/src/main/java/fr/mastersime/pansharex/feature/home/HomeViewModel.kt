@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.camera.core.ImageCapture
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import fr.mastersime.repository.RepositoryApp
+import fr.mastersime.pansharex.repository.RepositoryApp
 import java.io.File
 import javax.inject.Inject
 
