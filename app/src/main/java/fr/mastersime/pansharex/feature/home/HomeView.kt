@@ -23,16 +23,13 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
-import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.mastersime.pansharex.R
 import fr.mastersime.pansharex.feature.grantpermission.NoPermissionScreen
-import fr.mastersime.pansharex.setup.takePicture
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,7 +40,7 @@ import java.io.File
 @Composable
 fun HomeView(navController: NavController) {
 
-    val homeViewModel : HomeViewModel = hiltViewModel()
+    val homeViewModel: HomeViewModel = hiltViewModel()
 
     val cameraPermissionState =
         rememberPermissionState(permission = android.Manifest.permission.CAMERA)
@@ -99,7 +96,8 @@ fun CameraView(navController: NavController, homeViewModel: HomeViewModel) {
                 Log.d("CameraView", "Hello From onCLick Bouton")
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    val photoFile = homeViewModel.takePicture(imageCapture.value, outputDirectory, context)
+                    val photoFile =
+                        homeViewModel.takePicture(imageCapture.value, outputDirectory, context)
                 }
 
                 //navController.navigate(SUMMURY_VIEW_ROUTE)
@@ -110,8 +108,8 @@ fun CameraView(navController: NavController, homeViewModel: HomeViewModel) {
             .align(Alignment.CenterHorizontally)
             .padding(16.dp),
             content = {
-            Text("Détecter le panneau")
-        })
+                Text("Détecter le panneau")
+            })
     }
 }
 
