@@ -1,17 +1,14 @@
 package fr.mastersime.pansharex.feature.home
 
-import android.content.Context
-import android.provider.MediaStore
 import android.util.Log
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,23 +18,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
-import fr.mastersime.pansharex.feature.grantpermission.NoPermissionScreen
-import java.io.File
 import fr.mastersime.pansharex.R
+import fr.mastersime.pansharex.feature.grantpermission.NoPermissionScreen
 import fr.mastersime.pansharex.setup.takePicture
+import java.io.File
 
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun HomeView(navController: NavController) {
+fun HomeView() {
 
     val cameraPermissionState =
         rememberPermissionState(permission = android.Manifest.permission.CAMERA)
@@ -51,17 +48,13 @@ fun HomeView(navController: NavController) {
         }
 
         cameraPermissionState.status.shouldShowRationale || locationPermissionState.status.shouldShowRationale -> {
-            NoPermissionScreen(
-                onRequestCameraPermission = { cameraPermissionState.launchPermissionRequest() },
-                onRequestLocationPermission = { locationPermissionState.launchPermissionRequest() }
-            )
+            NoPermissionScreen(onRequestCameraPermission = { cameraPermissionState.launchPermissionRequest() },
+                onRequestLocationPermission = { locationPermissionState.launchPermissionRequest() })
         }
 
         else -> {
-            NoPermissionScreen(
-                onRequestCameraPermission = { cameraPermissionState.launchPermissionRequest() },
-                onRequestLocationPermission = { locationPermissionState.launchPermissionRequest() }
-            )
+            NoPermissionScreen(onRequestCameraPermission = { cameraPermissionState.launchPermissionRequest() },
+                onRequestLocationPermission = { locationPermissionState.launchPermissionRequest() })
         }
     }
 
@@ -90,25 +83,20 @@ fun CameraView() {
                     bindPreview(cameraProvider, previewView, lifecycleOwner, imageCapture.value)
                 }, executor)
                 previewView
-            },
-            modifier = Modifier
-                .weight(1f)
+            }, modifier = Modifier.fillMaxSize(0.9f)
         )
-        Button(
-            onClick = {
-                if (imageCapture.value != null) {
-                    takePicture(imageCapture.value, outputDirectory, context)
-                } else {
-                    Log.e("CameraView", "Camera initialization is not complete")
-                }
-            },
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-            ,
-            content = {
-                Text("Prendre une photo")
+        Button(onClick = {
+            if (imageCapture.value != null) {
+                takePicture(imageCapture.value, outputDirectory, context)
+            } else {
+                Log.e("CameraView", "Camera initialization is not complete")
             }
-        )
+        }, modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .padding(16.dp),
+            content = {
+            Text("Détecter le panneau")
+        })
     }
 }
 

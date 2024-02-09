@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import fr.mastersime.pansharex.feature.home.HomeView
+import fr.mastersime.pansharex.feature.summary.SummaryView
 import fr.mastersime.pansharex.setup.Screen.HOME_VIEW_ROUTE
 
 @Composable
@@ -18,7 +19,12 @@ fun SetupNavGraph(
         composable(
             route = HOME_VIEW_ROUTE,
         ) {
-            HomeView(navController)
+            HomeView()
+        }
+        composable(
+            route = Screen.SUMMURY_VIEW_ROUTE,
+        ) {
+            SummaryView()
         }
     }
 }

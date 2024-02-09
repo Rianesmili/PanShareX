@@ -3,6 +3,8 @@ package fr.mastersime.pansharex.setup
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -38,7 +40,17 @@ fun takePicture(imageCapture: ImageCapture?, outputDirectory: File?, context: Co
                         val savedUri = Uri.fromFile(photoFile)
                         val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, savedUri)
 
-                        // Use the bitmap as needed
+                        // Correct the orientation of the bitmap
+                        val exif = ExifInterface(photoFile.absolutePath)
+                        val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+                        val rotatedBitmap = when (orientation) {
+                            ExifInterface.ORIENTATION_ROTATE_90 -> bitmap.rotate(90f)
+                            ExifInterface.ORIENTATION_ROTATE_180 -> bitmap.rotate(180f)
+                            ExifInterface.ORIENTATION_ROTATE_270 -> bitmap.rotate(270f)
+                            else -> bitmap
+                        }
+
+                        // Use the rotatedBitmap as needed
 
                         // Add the image to the gallery
                         val contentValues = ContentValues().apply {
@@ -53,7 +65,7 @@ fun takePicture(imageCapture: ImageCapture?, outputDirectory: File?, context: Co
                         val uri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
 
                         context.contentResolver.openOutputStream(uri!!)?.use { outputStream ->
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                            rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
                         } ?: Log.e("CameraView", "Failed to open output stream")
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -70,4 +82,9 @@ fun takePicture(imageCapture: ImageCapture?, outputDirectory: File?, context: Co
             )
         }
     }
+}
+
+fun Bitmap.rotate(degrees: Float): Bitmap {
+    val matrix = Matrix().apply { postRotate(degrees) }
+    return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
 }
