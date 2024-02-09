@@ -12,7 +12,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val repository: RepositoryApp
 ) : ViewModel(){
-    suspend fun takePicture(imageCapture: ImageCapture?, outputDirectory: File?, context: Context) {
-        repository.takePicture(imageCapture, outputDirectory, context)
+    suspend fun takePictureAndGetClass(imageCapture: ImageCapture?, outputDirectory: File?, context: Context) : String{
+       return repository.takePictureAndGetClass(imageCapture, outputDirectory, context)
     }
 }

@@ -30,6 +30,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import fr.mastersime.pansharex.R
 import fr.mastersime.pansharex.feature.grantpermission.NoPermissionScreen
+import fr.mastersime.pansharex.setup.Screen.SUMMURY_VIEW_ROUTE
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -96,11 +97,10 @@ fun CameraView(navController: NavController, homeViewModel: HomeViewModel) {
                 Log.d("CameraView", "Hello From onCLick Bouton")
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    val photoFile =
-                        homeViewModel.takePicture(imageCapture.value, outputDirectory, context)
+                    val className = homeViewModel.takePictureAndGetClass(imageCapture.value, outputDirectory, context)
                 }
 
-                //navController.navigate(SUMMURY_VIEW_ROUTE)
+                navController.navigate(SUMMURY_VIEW_ROUTE)
             } else {
                 Log.e("CameraView", "Camera initialization is not complete")
             }

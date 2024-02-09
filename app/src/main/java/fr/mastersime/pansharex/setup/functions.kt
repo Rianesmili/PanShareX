@@ -18,28 +18,6 @@ import java.nio.ByteOrder
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-fun createPhotoFile(outputDirectory: File?): File {
-    return File(
-        outputDirectory,
-        SimpleDateFormat(Screen.FILENAME_FORMAT, Locale.FRANCE)
-            .format(System.currentTimeMillis()) + ".jpg"
-    )
-}
-
-fun correctBitmapOrientation(photoFile: File, bitmap: Bitmap): Bitmap {
-    val exif = ExifInterface(photoFile.absolutePath)
-    val orientation = exif.getAttributeInt(
-        ExifInterface.TAG_ORIENTATION,
-        ExifInterface.ORIENTATION_NORMAL
-    )
-    return when (orientation) {
-        ExifInterface.ORIENTATION_ROTATE_90 -> bitmap.rotate(90f)
-        ExifInterface.ORIENTATION_ROTATE_180 -> bitmap.rotate(180f)
-        ExifInterface.ORIENTATION_ROTATE_270 -> bitmap.rotate(270f)
-        else -> bitmap
-    }
-}
-
 fun runModelInference(context: Context, bitmap: Bitmap): String {
     // Load the model
     val model = Model.newInstance(context)
@@ -61,9 +39,9 @@ fun runModelInference(context: Context, bitmap: Bitmap): String {
     for (i in 0 until 200) {
         for (j in 0 until 200) {
             val value = intValues[pixel++]
-            byteBuffer.putFloat(((value shr 16 and 0xFF) - 127.5f) / 127.5f)
-            byteBuffer.putFloat(((value shr 8 and 0xFF) - 127.5f) / 127.5f)
-            byteBuffer.putFloat(((value and 0xFF) - 127.5f) / 127.5f)
+            byteBuffer.putFloat((value shr 16 and 0xFF) / 255.0f)
+            byteBuffer.putFloat((value shr 8 and 0xFF) / 255.0f)
+            byteBuffer.putFloat((value and 0xFF) / 255.0f)
         }
     }
 
@@ -134,6 +112,27 @@ fun addImageToGallery(context: Context, photoFile: File, bitmap: Bitmap) {
     }
 }
 
+fun createPhotoFile(outputDirectory: File?): File {
+    return File(
+        outputDirectory,
+        SimpleDateFormat(Screen.FILENAME_FORMAT, Locale.FRANCE)
+            .format(System.currentTimeMillis()) + ".jpg"
+    )
+}
+
+fun correctBitmapOrientation(photoFile: File, bitmap: Bitmap): Bitmap {
+    val exif = ExifInterface(photoFile.absolutePath)
+    val orientation = exif.getAttributeInt(
+        ExifInterface.TAG_ORIENTATION,
+        ExifInterface.ORIENTATION_NORMAL
+    )
+    return when (orientation) {
+        ExifInterface.ORIENTATION_ROTATE_90 -> bitmap.rotate(90f)
+        ExifInterface.ORIENTATION_ROTATE_180 -> bitmap.rotate(180f)
+        ExifInterface.ORIENTATION_ROTATE_270 -> bitmap.rotate(270f)
+        else -> bitmap
+    }
+}
 
 fun Bitmap.rotate(degrees: Float): Bitmap {
     val matrix = Matrix().apply { postRotate(degrees) }

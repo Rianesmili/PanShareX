@@ -19,11 +19,13 @@ import java.io.File
 import javax.inject.Inject
 
 class RepositoryAppImpl @Inject constructor() : RepositoryApp {
-    override suspend fun takePicture(
+
+    override suspend fun takePictureAndGetClass(
         imageCapture: ImageCapture?,
         outputDirectory: File?,
         context: Context
-    ) {
+    ) : String {
+        var className = ""
         val photoFile = createPhotoFile(outputDirectory)
 
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
@@ -41,7 +43,7 @@ class RepositoryAppImpl @Inject constructor() : RepositoryApp {
 
                             val rotatedBitmap = correctBitmapOrientation(photoFile, bitmap)
 
-                            val className = runModelInference(context, rotatedBitmap)
+                            className = runModelInference(context, rotatedBitmap)
 
                             Toast.makeText(context, className, Toast.LENGTH_SHORT).show()
                             Log.d("CameraContent", "Hello From class name: $className")
@@ -59,6 +61,8 @@ class RepositoryAppImpl @Inject constructor() : RepositoryApp {
                     }
                 )
             }
+
         }
+        return className
     }
 }
