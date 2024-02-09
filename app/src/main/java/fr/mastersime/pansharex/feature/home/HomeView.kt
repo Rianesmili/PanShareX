@@ -6,10 +6,12 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +35,9 @@ import fr.mastersime.pansharex.feature.grantpermission.NoPermissionScreen
 import fr.mastersime.pansharex.setup.Screen.SUMMURY_VIEW_ROUTE
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 
@@ -74,43 +78,74 @@ fun CameraView(navController: NavController, homeViewModel: HomeViewModel) {
     val lifecycleOwner = LocalLifecycleOwner.current
     var imageCapture = remember { mutableStateOf<ImageCapture?>(null) }
 
+    var isProcessing = remember { mutableStateOf(false) } // Ajoutez cet état
 
     val outputDirectory = context.externalMediaDirs.firstOrNull()?.let {
         File(it, context.resources.getString(R.string.app_name)).apply { mkdirs() }
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        AndroidView(
-            factory = { ctx ->
-                val previewView = PreviewView(ctx)
-                val executor = ContextCompat.getMainExecutor(ctx)
-                cameraProviderFuture.addListener({
-                    val cameraProvider = cameraProviderFuture.get()
-                    imageCapture.value = ImageCapture.Builder().build()
-                    bindPreview(cameraProvider, previewView, lifecycleOwner, imageCapture.value)
-                }, executor)
-                previewView
-            }, modifier = Modifier.fillMaxSize(0.9f)
-        )
-        Button(onClick = {
-            if (imageCapture.value != null) {
-                Log.d("CameraView", "Hello From onCLick Bouton")
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    val className = homeViewModel.takePictureAndGetClass(imageCapture.value, outputDirectory, context)
-                }
-
-                navController.navigate(SUMMURY_VIEW_ROUTE)
-            } else {
-                Log.e("CameraView", "Camera initialization is not complete")
+    when (isProcessing.value) {
+        true -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator() // Affichez un indicateur de progression si isProcessing est true
             }
-        }, modifier = Modifier
-            .align(Alignment.CenterHorizontally)
-            .padding(16.dp),
-            content = {
-                Text("Détecter le panneau")
-            })
+        }
+
+        false -> {
+            Column(modifier = Modifier.fillMaxSize()) {
+                AndroidView(
+                    factory = { ctx ->
+                        val previewView = PreviewView(ctx)
+                        val executor = ContextCompat.getMainExecutor(ctx)
+                        cameraProviderFuture.addListener({
+                            val cameraProvider = cameraProviderFuture.get()
+                            imageCapture.value = ImageCapture.Builder().build()
+                            bindPreview(
+                                cameraProvider,
+                                previewView,
+                                lifecycleOwner,
+                                imageCapture.value
+                            )
+                        }, executor)
+                        previewView
+                    }, modifier = Modifier.fillMaxSize(0.9f)
+                )
+                Button(onClick = {
+                    if (imageCapture.value != null) {
+                        Log.d("CameraView", "Hello From onCLick Bouton")
+
+                        isProcessing.value = true // Définissez isProcessing à true avant l'appel
+                        CoroutineScope(Dispatchers.Default).launch {
+                            val className = homeViewModel.takePictureAndGetClass(
+                                imageCapture.value,
+                                outputDirectory,
+                                context
+                            )
+                            delay(5000)
+                            isProcessing.value = false // Set isProcessing to false after the call
+                            Log.d("CameraView", "Hello From className: $className")
+
+                            // Navigate after the model has returned the class name
+                            //navController.navigate("$SUMMURY_VIEW_ROUTE/$className")
+                            // Switch to the main thread before navigating
+                            withContext(Dispatchers.Main) {
+                                navController.navigate(SUMMURY_VIEW_ROUTE)
+                            }
+                        }
+
+                    } else {
+                        Log.e("CameraView", "Camera initialization is not complete")
+                    }
+                }, modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(16.dp),
+                    content = {
+                        Text("Détecter le panneau")
+                    })
+            }
+        }
     }
+
 }
 
 

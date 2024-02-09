@@ -17,6 +17,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class RepositoryAppImpl @Inject constructor() : RepositoryApp {
 
@@ -24,7 +26,7 @@ class RepositoryAppImpl @Inject constructor() : RepositoryApp {
         imageCapture: ImageCapture?,
         outputDirectory: File?,
         context: Context
-    ) : String {
+    ): String = suspendCoroutine { continuation ->
         var className = ""
         val photoFile = createPhotoFile(outputDirectory)
 
@@ -48,6 +50,8 @@ class RepositoryAppImpl @Inject constructor() : RepositoryApp {
                             Log.d("CameraContent", "Hello From class name: $className")
 
                             addImageToGallery(context, photoFile, rotatedBitmap)
+                            // Resume the coroutine with the class name
+                            continuation.resume(className)
                         }
 
                         override fun onError(exception: ImageCaptureException) {
@@ -62,6 +66,5 @@ class RepositoryAppImpl @Inject constructor() : RepositoryApp {
             }
 
         }
-        return className
     }
 }
