@@ -22,19 +22,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import fr.mastersime.pansharex.R
 import fr.mastersime.pansharex.feature.grantpermission.NoPermissionScreen
+import fr.mastersime.pansharex.setup.Screen.SUMMURY_VIEW_ROUTE
 import fr.mastersime.pansharex.setup.takePicture
 import java.io.File
 
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun HomeView() {
+fun HomeView(navController: NavController) {
 
     val cameraPermissionState =
         rememberPermissionState(permission = android.Manifest.permission.CAMERA)
@@ -44,7 +46,7 @@ fun HomeView() {
     when {
 
         cameraPermissionState.status.isGranted && locationPermissionState.status.isGranted -> {
-            CameraView()
+            CameraView(navController = navController)
         }
 
         cameraPermissionState.status.shouldShowRationale || locationPermissionState.status.shouldShowRationale -> {
@@ -61,7 +63,7 @@ fun HomeView() {
 }
 
 @Composable
-fun CameraView() {
+fun CameraView(navController: NavController) {
     val context = LocalContext.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -88,6 +90,7 @@ fun CameraView() {
         Button(onClick = {
             if (imageCapture.value != null) {
                 takePicture(imageCapture.value, outputDirectory, context)
+                navController.navigate(SUMMURY_VIEW_ROUTE)
             } else {
                 Log.e("CameraView", "Camera initialization is not complete")
             }
