@@ -67,7 +67,7 @@ fun runModelInference(context: Context, bitmap: Bitmap): String {
         "Hello From outputFeature0: ${outputFeature0.floatArray.contentToString()}"
     )
     // Define the classes
-    val classes = arrayOf("limitation", "danger", "obligation")
+    val classes = arrayOf("Panneau code de la route", "Panneau de Danger", "Panneau de Ville")
 
     // Get the class name with the highest confidence
     val className = classes[maxIndex]
