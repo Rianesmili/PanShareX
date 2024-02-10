@@ -32,8 +32,8 @@ fun ListeOfPhotoData() {
         item {
             PhotoDataRow(
                 PhotoData(
-                    type = "Type",
-                    location = Location(0.0, 0.0)
+                    type = "Panneau de danger",
+                    location = Location(1.452657, 5.51657687)
                 )
             )
         }
@@ -48,21 +48,26 @@ fun PhotoDataRow(photoData: PhotoData?) {
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = photoData?.location?.latitude.toString() ?: "Unknown",
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .padding(8.dp)
-        )
-        Text(
-            text = photoData?.location?.longitude.toString() ?: "Unknown",
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .padding(8.dp)
-        )
+        Column (
+            Modifier.weight(1f)
+        ) {
+            Text(
+                text = "Latitude : ${photoData?.location?.latitude.toString()}",
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .padding(8.dp)
+            )
+
+            Text(
+                text = "Longitude : ${photoData?.location?.longitude.toString()}",
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .padding(8.dp)
+            )
+        }
 
         Text(
-            text = photoData?.type ?: "Unknown",
+            text = photoData?.type ?: "Panneau de Danger",
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .padding(8.dp)
@@ -99,10 +104,5 @@ fun HomeHeaderPreview() {
 @Preview(showBackground = true)
 @Composable
 fun PhotoDataRowPreview() {
-    PhotoDataRow(
-        PhotoData(
-            type = "Type",
-            location = Location(0.0, 0.0)
-        )
-    )
+    ListeOfPhotoData()
 }
