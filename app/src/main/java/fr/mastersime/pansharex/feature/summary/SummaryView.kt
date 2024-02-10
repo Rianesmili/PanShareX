@@ -34,6 +34,10 @@ fun SummaryView(className: String? = "Unknown") {
     LaunchedEffect(homeviewModel) {
         homeviewModel.location.collect { location ->
             locationModel = location
+            photoData = PhotoData(location = location, type = className)
+
+            homeviewModel.updatePhotoData(photoData ?: PhotoData(null, null, "Unknown"))
+            homeviewModel.sendPhotoDataToBackend()
         }
     }
 
@@ -50,13 +54,13 @@ fun SummaryView(className: String? = "Unknown") {
         )
         Spacer(modifier = Modifier.padding(10.dp))
         Text(
-            text = "Latitude : ${locationModel?.latitude}",
+            text = "Latitude : ${photoData?.location?.latitude}",
             style = MaterialTheme.typography.bodyMedium,
             fontSize = 20.sp,
 
             )
         Text(
-            text = "Longitude:  ${locationModel?.longitude}",
+            text = "Longitude:  ${photoData?.location?.longitude}",
             style = MaterialTheme.typography.bodyMedium,
             fontSize = 20.sp,
         )
@@ -68,7 +72,7 @@ fun SummaryView(className: String? = "Unknown") {
         )
         Spacer(modifier = Modifier.padding(10.dp))
         Text(
-            text = className ?: "Unretrived",
+            text = photoData?.type ?: "Unretrived",
             style = MaterialTheme.typography.bodyMedium,
             fontSize = 20.sp,
         )

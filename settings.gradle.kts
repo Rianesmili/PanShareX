@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "PanShare X"
 include(":app")
- 
+include(":pansharexadmin")

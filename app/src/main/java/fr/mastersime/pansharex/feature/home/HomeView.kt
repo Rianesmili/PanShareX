@@ -121,7 +121,7 @@ fun CameraView(navController: NavController, homeViewModel: HomeViewModel) {
                                 outputDirectory,
                                 context
                             )
-                            delay(5000)
+                            delay(4000)
                             isProcessing.value = false // Set isProcessing to false after the call
                             Log.d("CameraView", "Hello From className: $className")
 
