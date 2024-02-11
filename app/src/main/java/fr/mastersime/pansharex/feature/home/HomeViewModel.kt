@@ -21,7 +21,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val repository: RepositoryApp,
     private val locationRepository: LocalisationRepository
-) : ViewModel(){
+) : ViewModel() {
 
     private val _location = MutableStateFlow<Location?>(null)
     val location: StateFlow<Location?> get() = _location
@@ -48,12 +48,19 @@ class HomeViewModel @Inject constructor(
 
     fun sendPhotoDataToBackend() {
         val gson = Gson()
-        val json = gson.toJson(_photoData.value)
         // Simuler l'envoi du JSON au backend
-        Log.d("", "Hello from Envoi du JSON au backend: $json")
+        if (_photoData.value != null && _location.value != null) {
+            val json = gson.toJson(_photoData.value)
+            // Simuler l'envoi du JSON au backend
+            Log.d("", "Hello from Envoi du JSON au backend: $json")
+        }
     }
 
-    suspend fun takePictureAndGetClass(imageCapture: ImageCapture?, outputDirectory: File?, context: Context) : String{
-       return repository.takePictureAndGetClass(imageCapture, outputDirectory, context)
+    suspend fun takePictureAndGetClass(
+        imageCapture: ImageCapture?,
+        outputDirectory: File?,
+        context: Context
+    ): String {
+        return repository.takePictureAndGetClass(imageCapture, outputDirectory, context)
     }
 }
