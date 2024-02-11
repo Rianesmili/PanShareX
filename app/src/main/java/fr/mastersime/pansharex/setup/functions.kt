@@ -3,8 +3,10 @@ package fr.mastersime.pansharex.setup
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.graphics.Matrix
 import android.media.ExifInterface
+import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
@@ -137,4 +139,19 @@ fun correctBitmapOrientation(photoFile: File, bitmap: Bitmap): Bitmap {
 fun Bitmap.rotate(degrees: Float): Bitmap {
     val matrix = Matrix().apply { postRotate(degrees) }
     return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
+}
+
+fun getBitmapFromUri(context: Context, uri: Uri): Bitmap? {
+    return try {
+        val bitmap = if(Build.VERSION.SDK_INT < 28) {
+            MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+        } else {
+            val source = ImageDecoder.createSource(context.contentResolver, uri)
+            ImageDecoder.decodeBitmap(source)
+        }
+        bitmap.copy(Bitmap.Config.ARGB_8888, true)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
 }

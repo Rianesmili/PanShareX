@@ -30,7 +30,6 @@ class RepositoryAppImpl @Inject constructor(
 
     override suspend fun sendPhotoData(photoData: PhotoData): Response<ResponseBody> = photoApi.sendPhotoData(photoData)
 
-
     override suspend fun takePictureAndGetClass(
         imageCapture: ImageCapture?,
         outputDirectory: File?,

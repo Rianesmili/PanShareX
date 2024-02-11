@@ -1,6 +1,9 @@
 package fr.mastersime.pansharex.feature.home
 
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
@@ -14,6 +17,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,6 +37,8 @@ import com.google.accompanist.permissions.shouldShowRationale
 import fr.mastersime.pansharex.R
 import fr.mastersime.pansharex.feature.grantpermission.NoPermissionScreen
 import fr.mastersime.pansharex.setup.Screen.SUMMURY_VIEW_ROUTE
+import fr.mastersime.pansharex.setup.getBitmapFromUri
+import fr.mastersime.pansharex.setup.runModelInference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -118,7 +124,7 @@ fun CameraView(navController: NavController, homeViewModel: HomeViewModel) {
                             )
                         }, executor)
                         previewView
-                    }, modifier = Modifier.fillMaxSize(0.9f)
+                    }, modifier = Modifier.fillMaxSize(0.8f)
                 )
                 Button(onClick = {
                     if (imageCapture.value != null) {
@@ -155,10 +161,51 @@ fun CameraView(navController: NavController, homeViewModel: HomeViewModel) {
                     content = {
                         Text("Détecter le panneau")
                     })
+                GalleryButton(homeViewModel = homeViewModel, navController = navController, isProcessing = isProcessing)
             }
         }
     }
 
+}
+
+
+@Composable
+fun GalleryButton(navController: NavController, homeViewModel: HomeViewModel, isProcessing: MutableState<Boolean>) {
+    val context = LocalContext.current
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let {
+                val bitmap = getBitmapFromUri(context, it)
+                bitmap?.let { bmp ->
+                    CoroutineScope(Dispatchers.Default).launch {
+                        isProcessing.value = true // Définissez isProcessing à true avant l'appel
+                        val className = runModelInference(context, bmp)
+                        delay(4000)
+                        isProcessing.value = false
+                        Log.d("GalleryButton", "Hello From className: $className")
+
+                        withContext(Dispatchers.Main) {
+                            navController.navigate(
+                                SUMMURY_VIEW_ROUTE.replace(
+                                    "{className}",
+                                    className
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    Button(
+        onClick = {
+            launcher.launch("image/*")
+        },
+        content = {
+            Text("Choisir une image depuis la galerie")
+        },
+        modifier = Modifier
+            .padding(16.dp)
+    )
 }
 
 

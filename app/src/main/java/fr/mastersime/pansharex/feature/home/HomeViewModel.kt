@@ -45,17 +45,6 @@ class HomeViewModel @Inject constructor(
     fun updatePhotoData(photoData: PhotoData) {
         _photoData.value = photoData
     }
-    /*
-    fun sendPhotoDataToBackend() {
-        val gson = Gson()
-        // Simuler l'envoi du JSON au backend
-        if (_photoData.value != null && _location.value != null) {
-            val json = gson.toJson(_photoData.value)
-            // Simuler l'envoi du JSON au backend
-            Log.d("", "Hello from Envoi du JSON au backend: $json")
-        }
-    }
-     */
 
     fun sendPhotoDataToBackend() {
     val gson = Gson()
