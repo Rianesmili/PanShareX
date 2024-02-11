@@ -8,19 +8,28 @@ import android.widget.Toast
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.core.content.ContextCompat
+import fr.mastersime.pansharex.data.PhotoData
 import fr.mastersime.pansharex.setup.addImageToGallery
 import fr.mastersime.pansharex.setup.correctBitmapOrientation
 import fr.mastersime.pansharex.setup.createPhotoFile
 import fr.mastersime.pansharex.setup.runModelInference
+import fr.mastersime.pansharex.webservices.PhotoApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.ResponseBody
+import retrofit2.Response
 import java.io.File
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class RepositoryAppImpl @Inject constructor() : RepositoryApp {
+class RepositoryAppImpl @Inject constructor(
+    private val photoApi : PhotoApi
+) : RepositoryApp {
+
+    override suspend fun sendPhotoData(photoData: PhotoData): Response<ResponseBody> = photoApi.sendPhotoData(photoData)
+
 
     override suspend fun takePictureAndGetClass(
         imageCapture: ImageCapture?,

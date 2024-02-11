@@ -1,4 +1,4 @@
-package fr.mastersime.pansharexadmin.ui.feature
+package fr.mastersime.pansharexadmin.feature
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

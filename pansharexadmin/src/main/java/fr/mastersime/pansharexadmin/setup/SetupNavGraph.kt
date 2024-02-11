@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import fr.mastersime.pansharexadmin.setup.Screen.ADMIN_VIEW_ROUTE
-import fr.mastersime.pansharexadmin.ui.feature.AdminView
+import fr.mastersime.pansharexadmin.feature.AdminView
 
 @Composable
 fun SetupNavGraph(

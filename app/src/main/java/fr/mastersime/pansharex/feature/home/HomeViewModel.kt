@@ -45,7 +45,7 @@ class HomeViewModel @Inject constructor(
     fun updatePhotoData(photoData: PhotoData) {
         _photoData.value = photoData
     }
-
+    /*
     fun sendPhotoDataToBackend() {
         val gson = Gson()
         // Simuler l'envoi du JSON au backend
@@ -55,7 +55,21 @@ class HomeViewModel @Inject constructor(
             Log.d("", "Hello from Envoi du JSON au backend: $json")
         }
     }
+     */
 
+    fun sendPhotoDataToBackend() {
+    val gson = Gson()
+    if (_photoData.value != null && _location.value != null) {
+        viewModelScope.launch {
+            val response = repository.sendPhotoData(_photoData.value!!)
+            if (response.isSuccessful) {
+                Log.d("", "Data sent to backend successfully")
+            } else {
+                Log.d("", "Failed to send data to backend: ${response.errorBody()?.string()}")
+            }
+        }
+    }
+}
     suspend fun takePictureAndGetClass(
         imageCapture: ImageCapture?,
         outputDirectory: File?,
