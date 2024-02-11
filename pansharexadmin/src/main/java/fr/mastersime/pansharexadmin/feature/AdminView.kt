@@ -6,36 +6,39 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import fr.mastersime.pansharexadmin.data.Location
 import fr.mastersime.pansharexadmin.data.PhotoData
 
 @Composable
 fun AdminView() {
+
+    val adminViewModel: AdminViewModel = hiltViewModel()
+    val photoData by adminViewModel.photoData.collectAsState()
+
     Column {
         HomeHeader()
-        ListeOfPhotoData()
-    }
-}
-
-@Composable
-fun ListeOfPhotoData() {
-    LazyColumn() {
-        item {
-            PhotoDataRow(
-                PhotoData(
-                    type = "Panneau de danger",
-                    location = Location(1.452657, 5.51657687)
-                )
-            )
+        if (photoData == null) {
+            CircularProgressIndicator()
+        } else {
+            LazyColumn {
+                items(photoData!!) {
+                    PhotoDataRow(it)
+                }
+            }
         }
     }
 }
@@ -48,7 +51,7 @@ fun PhotoDataRow(photoData: PhotoData?) {
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column (
+        Column(
             Modifier.weight(1f)
         ) {
             Text(
@@ -93,16 +96,4 @@ fun HomeHeader() {
                 .padding(8.dp)
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeHeaderPreview() {
-    HomeHeader()
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PhotoDataRowPreview() {
-    ListeOfPhotoData()
 }
