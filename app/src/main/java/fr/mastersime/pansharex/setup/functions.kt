@@ -67,7 +67,7 @@ fun runModelInference(context: Context, bitmap: Bitmap): String {
         "Hello From outputFeature0: ${outputFeature0.floatArray.contentToString()}"
     )
     // Define the classes
-    val classes = arrayOf("Panneau code de la route", "Panneau de Danger", "Panneau de Ville")
+    val classes = arrayOf("Limitation_30", "Limitation_40", "Limitation_50", "Limitation_60", "Limitation_70", "Limitation_80", "panneau_danger", "panneau_de_ville", "sens_interdit", "stationnement_interdit")
 
     // Get the class name with the highest confidence
     val className = classes[maxIndex]
@@ -83,7 +83,7 @@ fun addImageToGallery(context: Context, photoFile: File, bitmap: Bitmap) {
     val contentValues = ContentValues().apply {
         put(MediaStore.MediaColumns.DISPLAY_NAME, photoFile.name)
         put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { //use this if you are supporting Android 10 and above
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             put(
                 MediaStore.MediaColumns.RELATIVE_PATH,
                 Environment.DIRECTORY_PICTURES
