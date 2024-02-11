@@ -13,10 +13,12 @@ public class LoadDatabase {
     @Bean
     CommandLineRunner initDatabase(PhotoDataRepository repository) {
         return args -> {
-            Location location1 = new Location(40.748817, -73.985428);
-            Location location2 = new Location(51.507351, -0.127758);
-            repository.save(new PhotoData("image1", location1, "type1"));
-            repository.save(new PhotoData("image2", location2, "type2"));
+            if (repository.count() == 0) {
+                Location location1 = new Location(40.748817, -73.985428);
+                Location location2 = new Location(51.507351, -0.127758);
+                repository.save(new PhotoData("image1", location1, "Panneau de Ville"));
+                repository.save(new PhotoData("image2", location2, "Panneau du code de la route"));
+            }
         };
     }
 }
