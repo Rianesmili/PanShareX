@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -16,18 +17,21 @@ import androidx.compose.ui.Modifier
 @Composable
 fun NoPermissionScreen(
     onRequestCameraPermission: () -> Unit,
-    onRequestLocationPermission: () -> Unit
+    onRequestLocationPermission: () -> Unit,
+    onRequestReadExternalStoragePermission: () -> Unit
 ) {
     NoPermissionContent(
         onRequestCameraPermission = onRequestCameraPermission,
-        onRequestLocationPermission = onRequestLocationPermission
+        onRequestLocationPermission = onRequestLocationPermission,
+        onRequestReadExternalStoragePermission = onRequestReadExternalStoragePermission
     )
 }
 
 @Composable
 private fun NoPermissionContent(
     onRequestCameraPermission: () -> Unit,
-    onRequestLocationPermission: () -> Unit
+    onRequestLocationPermission: () -> Unit,
+    onRequestReadExternalStoragePermission: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -42,6 +46,10 @@ private fun NoPermissionContent(
         Button(onClick = onRequestLocationPermission) {
             Icon(imageVector = Icons.Default.LocationOn, contentDescription = "Location")
             Text(text = "Grant Location permission")
+        }
+        Button(onClick = onRequestReadExternalStoragePermission) {
+            Icon(imageVector = Icons.Default.Settings, contentDescription = "Gallery")
+            Text(text = "Grant Gallery access permission")
         }
     }
 }

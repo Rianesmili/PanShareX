@@ -52,20 +52,30 @@ fun HomeView(navController: NavController) {
     val locationPermissionState =
         rememberPermissionState(permission = android.Manifest.permission.ACCESS_FINE_LOCATION)
 
+    val readExternalStoragePermissionState =
+        rememberPermissionState(permission = android.Manifest.permission.READ_EXTERNAL_STORAGE)
+
+
     when {
 
-        cameraPermissionState.status.isGranted && locationPermissionState.status.isGranted -> {
+        cameraPermissionState.status.isGranted && locationPermissionState.status.isGranted && readExternalStoragePermissionState.status.isGranted -> {
             CameraView(navController = navController, homeViewModel = homeViewModel)
         }
 
-        cameraPermissionState.status.shouldShowRationale || locationPermissionState.status.shouldShowRationale -> {
+        cameraPermissionState.status.shouldShowRationale || locationPermissionState.status.shouldShowRationale || readExternalStoragePermissionState.status.shouldShowRationale -> {
             NoPermissionScreen(onRequestCameraPermission = { cameraPermissionState.launchPermissionRequest() },
-                onRequestLocationPermission = { locationPermissionState.launchPermissionRequest() })
+                onRequestLocationPermission = { locationPermissionState.launchPermissionRequest() },
+                onRequestReadExternalStoragePermission = { readExternalStoragePermissionState.launchPermissionRequest() }
+            )
         }
 
         else -> {
-            NoPermissionScreen(onRequestCameraPermission = { cameraPermissionState.launchPermissionRequest() },
-                onRequestLocationPermission = { locationPermissionState.launchPermissionRequest() })
+            NoPermissionScreen(
+                onRequestCameraPermission = { cameraPermissionState.launchPermissionRequest() },
+                onRequestLocationPermission = { locationPermissionState.launchPermissionRequest() },
+                onRequestReadExternalStoragePermission = { readExternalStoragePermissionState.launchPermissionRequest() }
+
+            )
         }
     }
 
@@ -125,11 +135,14 @@ fun CameraView(navController: NavController, homeViewModel: HomeViewModel) {
                             isProcessing.value = false // Set isProcessing to false after the call
                             Log.d("CameraView", "Hello From className: $className")
 
-                            // Navigate after the model has returned the class name
-                            //navController.navigate("$SUMMURY_VIEW_ROUTE/$className")
-                            // Switch to the main thread before navigating
+
                             withContext(Dispatchers.Main) {
-                                navController.navigate(SUMMURY_VIEW_ROUTE.replace("{className}", className))
+                                navController.navigate(
+                                    SUMMURY_VIEW_ROUTE.replace(
+                                        "{className}",
+                                        className
+                                    )
+                                )
                             }
                         }
 
