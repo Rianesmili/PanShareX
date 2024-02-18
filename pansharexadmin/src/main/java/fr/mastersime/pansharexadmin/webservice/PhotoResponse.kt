@@ -6,5 +6,6 @@ data class PhotoResponse(
     val id: Int,
     val image: String?,
     val location: Location,
-    val type: String
+    val type: String,
+    val dateTime: String
 )

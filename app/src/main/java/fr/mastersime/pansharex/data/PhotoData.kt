@@ -5,5 +5,5 @@ import android.graphics.Bitmap
 data class PhotoData(
     val image: Bitmap? = null,
     val location: Location? = null,
-    var type: String? = "Unknown"
+    var type: String? = "Unknown",
 )

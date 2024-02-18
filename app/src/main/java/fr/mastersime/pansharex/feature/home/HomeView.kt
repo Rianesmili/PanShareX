@@ -1,9 +1,11 @@
 package fr.mastersime.pansharex.feature.home
 
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
@@ -47,6 +49,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun HomeView(navController: NavController) {
@@ -87,6 +90,7 @@ fun HomeView(navController: NavController) {
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CameraView(navController: NavController, homeViewModel: HomeViewModel) {
     val context = LocalContext.current
@@ -169,6 +173,7 @@ fun CameraView(navController: NavController, homeViewModel: HomeViewModel) {
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun GalleryButton(navController: NavController, homeViewModel: HomeViewModel, isProcessing: MutableState<Boolean>) {
     val context = LocalContext.current

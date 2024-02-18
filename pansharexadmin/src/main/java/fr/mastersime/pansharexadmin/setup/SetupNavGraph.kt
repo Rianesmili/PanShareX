@@ -18,7 +18,7 @@ fun SetupNavGraph(
         composable(
             route = ADMIN_VIEW_ROUTE,
         ) {
-            AdminView()
+            AdminView(context = navController.context)
         }
     }
 }

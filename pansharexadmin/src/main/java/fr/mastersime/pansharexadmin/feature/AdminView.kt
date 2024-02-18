@@ -1,6 +1,10 @@
 package fr.mastersime.pansharexadmin.feature
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,7 +28,7 @@ import fr.mastersime.pansharexadmin.data.Location
 import fr.mastersime.pansharexadmin.data.PhotoData
 
 @Composable
-fun AdminView() {
+fun AdminView(context: Context) {
 
     val adminViewModel: AdminViewModel = hiltViewModel()
     val photoData by adminViewModel.photoData.collectAsState()
@@ -36,7 +40,7 @@ fun AdminView() {
         } else {
             LazyColumn {
                 items(photoData!!) {
-                    PhotoDataRow(it)
+                    PhotoDataRow(it, context = context)
                 }
             }
         }
@@ -44,11 +48,19 @@ fun AdminView() {
 }
 
 @Composable
-fun PhotoDataRow(photoData: PhotoData?) {
+fun PhotoDataRow(photoData: PhotoData?, context: Context) {
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(16.dp)
+            .clickable {
+                photoData?.location?.let { location ->
+                    val intentUri = Uri.parse("geo:${location.longitude},${location.latitude}?q=${location.longitude},${location.latitude}")
+                    val mapIntent = Intent(Intent.ACTION_VIEW, intentUri)
+                    mapIntent.setPackage("com.google.android.apps.maps")
+                    context.startActivity(mapIntent)
+                }
+            },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(

@@ -3,6 +3,8 @@ package fr.mastersime.backend.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class PhotoData {
     @Id
@@ -12,16 +14,26 @@ public class PhotoData {
     @Embedded
     private Location location;
     private String type;
+    private LocalDateTime dateTime;
 
     public PhotoData(String image, Location location, String type) {
         this.image = image;
         this.location = location;
         this.type = type;
+        this.dateTime = LocalDateTime.now();
     }
 
 
     // No-argument constructor
     public PhotoData() {
+        this.dateTime = LocalDateTime.now();
+    }
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
     }
 
     // Getters

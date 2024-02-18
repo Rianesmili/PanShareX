@@ -11,48 +11,56 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import fr.mastersime.pansharex.ml.Model
+import androidx.annotation.RequiresApi
+import fr.mastersime.pansharex.ml.ModelOptimisationExperimentalSparsity
 import org.tensorflow.lite.DataType
+import org.tensorflow.lite.support.common.ops.NormalizeOp
+import org.tensorflow.lite.support.image.ImageProcessor
+import org.tensorflow.lite.support.image.TensorImage
+import org.tensorflow.lite.support.image.ops.ResizeOp
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.io.File
 import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-fun runModelInference(context: Context, bitmap: Bitmap): String {
-    // Load the model
-    val model = Model.newInstance(context)
+private const val IMAGE_WEIGHT = 224
+private const val IMAGE_HEIGHT = 224
 
-    // Convert the bitmap to a ByteBuffer
-    val byteBuffer = ByteBuffer.allocateDirect(4 * 200 * 200 * 3)
-    byteBuffer.order(ByteOrder.nativeOrder())
-    val intValues = IntArray(bitmap.width * bitmap.height)
-    bitmap.getPixels(
-        intValues,
-        0,
-        bitmap.width,
-        0,
-        0,
-        bitmap.width,
-        bitmap.height
-    )
-    var pixel = 0
-    for (i in 0 until 200) {
-        for (j in 0 until 200) {
-            val value = intValues[pixel++]
-            byteBuffer.putFloat((value shr 16 and 0xFF) / 255.0f)
-            byteBuffer.putFloat((value shr 8 and 0xFF) / 255.0f)
-            byteBuffer.putFloat((value and 0xFF) / 255.0f)
-        }
-    }
+// Define the classes
+private val classes = arrayOf(
+    "Limitation_30",
+    "Limitation_40",
+    "Limitation_50",
+    "Limitation_60",
+    "Limitation_70",
+    "Limitation_80",
+    "panneau_danger",
+    "panneau_de_ville",
+    "sens_interdit",
+    "stationnement_interdit"
+)
+
+fun runModelInference(context: Context, bitmap: Bitmap): String {
+
+    // Load the model
+    val model = ModelOptimisationExperimentalSparsity.newInstance(context)
+
+    // Create an ImageProcessor object
+    val imageProcessor = ImageProcessor.Builder()
+        .add(ResizeOp(IMAGE_HEIGHT, IMAGE_HEIGHT, ResizeOp.ResizeMethod.NEAREST_NEIGHBOR))
+        .add(NormalizeOp(0f, 255f)) // Normalize pixel values to [0,1]
+        .build()
+
+    // Preprocess the image and convert it into a TensorImage for classification
+    val tensorImage = imageProcessor.process(TensorImage.fromBitmap(bitmap))
+
+    // Convert the TensorImage to a ByteBuffer
+    val byteBuffer = tensorImage.buffer.rewind() as ByteBuffer
 
     // Creates inputs for reference.
     val inputFeature0 =
-        TensorBuffer.createFixedSize(
-            intArrayOf(1, 200, 200, 3),
-            DataType.FLOAT32
-        )
+        TensorBuffer.createFixedSize(intArrayOf(1, IMAGE_HEIGHT, IMAGE_HEIGHT, 3), DataType.FLOAT32)
     inputFeature0.loadBuffer(byteBuffer)
 
     // Runs model inference and gets result.
@@ -68,10 +76,7 @@ fun runModelInference(context: Context, bitmap: Bitmap): String {
         "take Picture",
         "Hello From outputFeature0: ${outputFeature0.floatArray.contentToString()}"
     )
-    // Define the classes
-    val classes = arrayOf("Limitation_30", "Limitation_40", "Limitation_50", "Limitation_60", "Limitation_70", "Limitation_80", "panneau_danger", "panneau_de_ville", "sens_interdit", "stationnement_interdit")
 
-    // Get the class name with the highest confidence
     val className = classes[maxIndex]
 
     // Releases model resources if no longer used.
@@ -79,6 +84,7 @@ fun runModelInference(context: Context, bitmap: Bitmap): String {
 
     return className
 }
+
 
 fun addImageToGallery(context: Context, photoFile: File, bitmap: Bitmap) {
     // Add the image to the gallery
@@ -141,9 +147,10 @@ fun Bitmap.rotate(degrees: Float): Bitmap {
     return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun getBitmapFromUri(context: Context, uri: Uri): Bitmap? {
     return try {
-        val bitmap = if(Build.VERSION.SDK_INT < 28) {
+        val bitmap = if (Build.VERSION.SDK_INT < 28) {
             MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
         } else {
             val source = ImageDecoder.createSource(context.contentResolver, uri)
