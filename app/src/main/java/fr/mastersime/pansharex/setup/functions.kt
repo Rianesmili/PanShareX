@@ -3,6 +3,7 @@ package fr.mastersime.pansharex.setup
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.ImageDecoder
 import android.graphics.Matrix
 import android.media.ExifInterface
@@ -12,17 +13,15 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import androidx.annotation.RequiresApi
-import fr.mastersime.pansharex.ml.ModelOptimisationExperimentalSparsity
+import fr.mastersime.pansharex.ml.Model
 import org.tensorflow.lite.DataType
-import org.tensorflow.lite.support.common.ops.NormalizeOp
-import org.tensorflow.lite.support.image.ImageProcessor
-import org.tensorflow.lite.support.image.TensorImage
-import org.tensorflow.lite.support.image.ops.ResizeOp
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.io.File
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.text.SimpleDateFormat
 import java.util.Locale
+
 
 private const val IMAGE_WEIGHT = 224
 private const val IMAGE_HEIGHT = 224
@@ -35,56 +34,80 @@ private val classes = arrayOf(
     "Limitation_60",
     "Limitation_70",
     "Limitation_80",
-    "panneau_danger",
     "panneau_de_ville",
     "sens_interdit",
     "stationnement_interdit"
 )
 
-fun runModelInference(context: Context, bitmap: Bitmap): String {
+fun classifyImage(bitmap: Bitmap, context: Context ) : String {
+    // Load the optimized model
+    val model = Model.newInstance(context)
 
-    // Load the model
-    val model = ModelOptimisationExperimentalSparsity.newInstance(context)
+    // Preprocess the image
+    val inputBuffer = preprocessImage(bitmap)
 
-    // Create an ImageProcessor object
-    val imageProcessor = ImageProcessor.Builder()
-        .add(ResizeOp(IMAGE_HEIGHT, IMAGE_HEIGHT, ResizeOp.ResizeMethod.NEAREST_NEIGHBOR))
-        .add(NormalizeOp(0f, 255f)) // Normalize pixel values to [0,1]
-        .build()
+    // Create input tensor
+    val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 224, 224, 3), DataType.FLOAT32)
+    inputFeature0.loadBuffer(inputBuffer)
 
-    // Preprocess the image and convert it into a TensorImage for classification
-    val tensorImage = imageProcessor.process(TensorImage.fromBitmap(bitmap))
-
-    // Convert the TensorImage to a ByteBuffer
-    val byteBuffer = tensorImage.buffer.rewind() as ByteBuffer
-
-    // Creates inputs for reference.
-    val inputFeature0 =
-        TensorBuffer.createFixedSize(intArrayOf(1, IMAGE_HEIGHT, IMAGE_HEIGHT, 3), DataType.FLOAT32)
-    inputFeature0.loadBuffer(byteBuffer)
-
-    // Runs model inference and gets result.
+    // Run inference and get result
     val outputs = model.process(inputFeature0)
     val outputFeature0 = outputs.outputFeature0AsTensorBuffer
 
-    // Get the index of the class with the highest confidence
-    val maxIndex =
-        outputFeature0.floatArray.indices.maxByOrNull { outputFeature0.floatArray[it] }
-            ?: -1
+    // Extract the most likely class and probability
+    val predictedClass = extractMostLikelyClass(outputFeature0.floatArray)
+    val probability = outputFeature0.floatArray[predictedClass]
 
-    Log.d(
-        "take Picture",
-        "Hello From outputFeature0: ${outputFeature0.floatArray.contentToString()}"
-    )
-
-    val className = classes[maxIndex]
-
-    // Releases model resources if no longer used.
+    // Release resources
     model.close()
 
+    val className = classes[predictedClass]
+
+    Log.d("take Picture", "Hello From className: $className")
+    Log.d("take Picture", "Hello From outputFeature0: ${outputFeature0.floatArray.contentToString()}")
+
+    // Return classification result
     return className
 }
 
+private fun preprocessImage(bitmap: Bitmap): ByteBuffer {
+    // Resize the image
+    val resizedImage = Bitmap.createScaledBitmap(bitmap, 224, 224, true)
+
+    // Allocate a ByteBuffer for the preprocessed data
+    val buffer = ByteBuffer.allocateDirect(224 * 224 * 3 * 4) // 4 bytes per float
+
+    // Normalize pixel values and write to the buffer
+    buffer.order(ByteOrder.nativeOrder())
+    for (y in 0 until resizedImage.height) {
+        for (x in 0 until resizedImage.width) {
+            val pixel = resizedImage.getPixel(x, y)
+            buffer.putFloat(Color.red(pixel) / 255.0f)
+            buffer.putFloat(Color.green(pixel) / 255.0f)
+            buffer.putFloat(Color.blue(pixel) / 255.0f)
+        }
+    }
+
+    // Flip the byte order if necessary
+    if (ByteOrder.nativeOrder() != ByteOrder.LITTLE_ENDIAN) {
+        buffer.flip()
+    }
+
+    return buffer
+}
+
+
+private fun extractMostLikelyClass(output: FloatArray): Int {
+    var maxIndex = 0
+    var maxProb = output[0]
+    for (i in 1 until output.size) {
+        if (output[i] > maxProb) {
+            maxIndex = i
+            maxProb = output[i]
+        }
+    }
+    return maxIndex
+}
 
 fun addImageToGallery(context: Context, photoFile: File, bitmap: Bitmap) {
     // Add the image to the gallery

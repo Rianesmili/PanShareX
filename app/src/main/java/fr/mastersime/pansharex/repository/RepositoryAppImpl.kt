@@ -10,9 +10,9 @@ import androidx.camera.core.ImageCaptureException
 import androidx.core.content.ContextCompat
 import fr.mastersime.pansharex.data.PhotoData
 import fr.mastersime.pansharex.setup.addImageToGallery
+import fr.mastersime.pansharex.setup.classifyImage
 import fr.mastersime.pansharex.setup.correctBitmapOrientation
 import fr.mastersime.pansharex.setup.createPhotoFile
-import fr.mastersime.pansharex.setup.runModelInference
 import fr.mastersime.pansharex.webservices.PhotoApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +52,7 @@ class RepositoryAppImpl @Inject constructor(
 
                             val rotatedBitmap = correctBitmapOrientation(photoFile, bitmap)
 
-                            className = runModelInference(context, rotatedBitmap)
+                            className = classifyImage(context = context, bitmap = rotatedBitmap)
 
                             Toast.makeText(context, className, Toast.LENGTH_SHORT).show()
                             Log.d("CameraContent", "Hello From class name: $className")

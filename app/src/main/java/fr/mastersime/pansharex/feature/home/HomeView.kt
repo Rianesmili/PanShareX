@@ -39,8 +39,8 @@ import com.google.accompanist.permissions.shouldShowRationale
 import fr.mastersime.pansharex.R
 import fr.mastersime.pansharex.feature.grantpermission.NoPermissionScreen
 import fr.mastersime.pansharex.setup.Screen.SUMMURY_VIEW_ROUTE
+import fr.mastersime.pansharex.setup.classifyImage
 import fr.mastersime.pansharex.setup.getBitmapFromUri
-import fr.mastersime.pansharex.setup.runModelInference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -184,7 +184,7 @@ fun GalleryButton(navController: NavController, homeViewModel: HomeViewModel, is
                 bitmap?.let { bmp ->
                     CoroutineScope(Dispatchers.Default).launch {
                         isProcessing.value = true // Définissez isProcessing à true avant l'appel
-                        val className = runModelInference(context, bmp)
+                        val className = classifyImage(context = context, bitmap = bmp)
                         delay(4000)
                         isProcessing.value = false
                         Log.d("GalleryButton", "Hello From className: $className")

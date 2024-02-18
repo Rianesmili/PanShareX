@@ -68,25 +68,31 @@ fun PhotoDataRow(photoData: PhotoData?, context: Context) {
         ) {
             Text(
                 text = "Latitude : ${photoData?.location?.latitude.toString()}",
-                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .padding(8.dp)
             )
 
             Text(
                 text = "Longitude : ${photoData?.location?.longitude.toString()}",
-                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .padding(8.dp)
             )
         }
+        Column(
+            Modifier.weight(1f)
+        ) {
+            Text(
+                text = "Date : ${photoData?.date.toString()}",
+                modifier = Modifier
+                    .padding(8.dp)
+            )
 
-        Text(
-            text = photoData?.type ?: "Panneau de Danger",
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .padding(8.dp)
-        )
+            Text(
+                text = photoData?.type ?: "Panneau de Danger",
+                modifier = Modifier
+                    .padding(8.dp)
+            )
+        }
     }
 }
 

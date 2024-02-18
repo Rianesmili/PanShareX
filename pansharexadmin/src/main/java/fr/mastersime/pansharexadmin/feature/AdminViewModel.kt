@@ -30,7 +30,8 @@ class AdminViewModel @Inject constructor(private val apiService: ApiService) : V
                         latitude = photoResponse.location.latitude,
                         longitude = photoResponse.location.longitude
                     ),
-                    type = photoResponse.type
+                    type = photoResponse.type,
+                    date = photoResponse.dateTime
                 )
             }
         }
