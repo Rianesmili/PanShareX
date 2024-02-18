@@ -102,7 +102,6 @@ fun HomeHeader() {
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(16.dp)
             .background(MaterialTheme.colorScheme.primary),
         verticalAlignment = Alignment.CenterVertically,
     ) {

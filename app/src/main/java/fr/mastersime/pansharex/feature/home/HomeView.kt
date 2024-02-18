@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -117,7 +116,11 @@ fun CameraView(navController: NavController, homeViewModel: HomeViewModel) {
         File(it, context.resources.getString(R.string.app_name)).apply { mkdirs() }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.tertiary),
+    ) {
         HomeHeader()
         AndroidView(
             factory = { ctx ->
@@ -134,7 +137,7 @@ fun CameraView(navController: NavController, homeViewModel: HomeViewModel) {
                     )
                 }, executor)
                 previewView
-            },  modifier = Modifier
+            }, modifier = Modifier
                 .align(Alignment.Center)
                 .padding(bottom = 60.dp)
                 .aspectRatio(1f) //set the aspect ratio to 1:1

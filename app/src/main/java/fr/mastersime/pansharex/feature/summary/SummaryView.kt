@@ -1,5 +1,6 @@
 package fr.mastersime.pansharex.feature.summary
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import fr.mastersime.pansharex.data.Location
 import fr.mastersime.pansharex.data.PhotoData
+import fr.mastersime.pansharex.feature.home.HomeHeader
 import fr.mastersime.pansharex.feature.home.HomeViewModel
 
 @Composable
@@ -45,10 +47,11 @@ fun SummaryView(className: String? = "Unknown", navController: NavController) {
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(30.dp),
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        HomeHeader()
+        Spacer(modifier = Modifier.padding(50.dp))
         Text(
             text = "Coordonées GPS :",
             style = MaterialTheme.typography.bodyLarge,
