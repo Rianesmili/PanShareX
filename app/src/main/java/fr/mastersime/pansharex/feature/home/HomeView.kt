@@ -141,7 +141,7 @@ fun CameraView(navController: NavController, homeViewModel: HomeViewModel) {
                                 outputDirectory,
                                 context
                             )
-                            delay(4000)
+                            delay(2000)
                             isProcessing.value = false // Set isProcessing to false after the call
                             Log.d("CameraView", "Hello From className: $className")
 
@@ -185,7 +185,7 @@ fun GalleryButton(navController: NavController, homeViewModel: HomeViewModel, is
                     CoroutineScope(Dispatchers.Default).launch {
                         isProcessing.value = true // Définissez isProcessing à true avant l'appel
                         val className = classifyImage(context = context, bitmap = bmp)
-                        delay(4000)
+                        delay(2000)
                         isProcessing.value = false
                         Log.d("GalleryButton", "Hello From className: $className")
 
