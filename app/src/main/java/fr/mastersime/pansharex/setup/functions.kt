@@ -28,16 +28,19 @@ private const val IMAGE_HEIGHT = 224
 
 // Define the classes
 private val classes = arrayOf(
-    "Limitation_30",
-    "Limitation_40",
-    "Limitation_50",
-    "Limitation_60",
-    "Limitation_70",
-    "Limitation_80",
-    "panneau_de_ville",
-    "sens_interdit",
-    "stationnement_interdit"
+    "Limitation_30_km",
+    "Limitation_40_km",
+    "Limitation_50_km",
+    "Limitation_60_km",
+    "Limitation_70_km",
+    "Limitation_80_km",
+    "Panneau_de_ville",
+    "Sens_Interdit",
+    "Stationnement_Interdit"
 )
+
+val min_accepted = 0.3
+
 
 fun classifyImage(bitmap: Bitmap, context: Context ) : String {
     // Load the optimized model
@@ -66,6 +69,9 @@ fun classifyImage(bitmap: Bitmap, context: Context ) : String {
     Log.d("take Picture", "Hello From className: $className")
     Log.d("take Picture", "Hello From outputFeature0: ${outputFeature0.floatArray.contentToString()}")
 
+    if (probability < min_accepted) {
+        return "Unknown"
+    }
     // Return classification result
     return className
 }

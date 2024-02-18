@@ -1,5 +1,7 @@
 package fr.mastersime.pansharex.setup
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
@@ -11,6 +13,7 @@ import fr.mastersime.pansharex.feature.home.HomeView
 import fr.mastersime.pansharex.feature.summary.SummaryView
 import fr.mastersime.pansharex.setup.Screen.HOME_VIEW_ROUTE
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SetupNavGraph(
     navController: NavHostController,
@@ -31,6 +34,7 @@ fun SetupNavGraph(
             val className: String? = backStackEntry.arguments?.getString("className")
             SummaryView(
                 className = className,
+                navController = navController
             )
         }
     }
